@@ -1,0 +1,12 @@
+spring:
+    application:
+        name: SmartKitchen
+    datasource:
+        driverClassName: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/SmartKitchen
+        username: postgres
+        password: admin
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
