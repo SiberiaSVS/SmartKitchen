@@ -1,34 +1,42 @@
 package com.example.SmartKitchen.security;
 
+import com.example.SmartKitchen.models.Role;
 import com.example.SmartKitchen.models.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private Long id;
     private String username;
     private String email;
     private String password;
+    private Role role;
+    private boolean enabled;
 
     public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword()
+                user.getPassword(),
+                user.getRole(),
+                user.isEnabled()
         );
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();//todo Добавить роли
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -58,6 +66,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

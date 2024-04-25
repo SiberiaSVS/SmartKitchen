@@ -14,4 +14,4 @@ spring:
         generate-ddl: true
 token:
     secret: zazhgitushinasriismoyivetomvsyanaukachrobvidetbukvimiliymoysumeygovnosmeniitmochoiidirabotaisuka
-    lifetime: 60000
+    lifetime: 3600000

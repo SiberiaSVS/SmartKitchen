@@ -1,6 +1,5 @@
 package com.example.SmartKitchen.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,15 +37,20 @@ public class TokenFilter extends OncePerRequestFilter {
                 username = jwtCore.getNameFromJwt(jwt);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     userDetails = userDetailsService.loadUserByUsername(username);
-                    auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    auth.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    if (userDetails.isEnabled()) {
+                        auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        auth.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request)
+                        );
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
+                    else {
+                        System.out.println("Пользователь в бане");
+                    }
                 }
             }
         } catch (Exception e) {
-            System.out.println("ОШИБКА");
+            System.out.println("Токен не прошел проверку");
         }
         filterChain.doFilter(request, response);
     }
