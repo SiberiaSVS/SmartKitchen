@@ -5,19 +5,22 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
-    private JwtCore jwtCore;
-    private UserDetailsService userDetailsService;
+    private final JwtCore jwtCore;
+    private final UserDetailsService userDetailsService;
 
 
     @Override
@@ -32,19 +35,18 @@ public class TokenFilter extends OncePerRequestFilter {
                 jwt = headerAuth.substring(7);
             }
             if (jwt != null) {
-                try {
-                    username = jwtCore.getNameFromJwt(jwt);
-                } catch (ExpiredJwtException e) {
-
-                }
+                username = jwtCore.getNameFromJwt(jwt);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     userDetails = userDetailsService.loadUserByUsername(username);
-                    auth = new UsernamePasswordAuthenticationToken(userDetails, null);
+                    auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    auth.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
         } catch (Exception e) {
-
+            System.out.println("ОШИБКА");
         }
         filterChain.doFilter(request, response);
     }

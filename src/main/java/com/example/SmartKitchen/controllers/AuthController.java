@@ -2,9 +2,11 @@ package com.example.SmartKitchen.controllers;
 
 import com.example.SmartKitchen.dto.SigninRequest;
 import com.example.SmartKitchen.dto.SignupRequest;
+import com.example.SmartKitchen.models.Role;
 import com.example.SmartKitchen.models.User;
 import com.example.SmartKitchen.repositories.UserRepository;
 import com.example.SmartKitchen.security.JwtCore;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,12 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private JwtCore jwtCore;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
 
     @PostMapping("/signup")
     ResponseEntity<?> signup(@RequestBody SignupRequest signupRequest) {
@@ -38,6 +41,7 @@ public class AuthController {
         user.setUsername(signupRequest.getUsername());
         user.setEmail(signupRequest.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setRole(Role.ROLE_USER);
         userRepository.save(user);
         return ResponseEntity.ok("Успех");
     }
