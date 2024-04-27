@@ -1,5 +1,6 @@
 package com.example.SmartKitchen.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -23,6 +24,7 @@ public class User {
     private String email;
 
     @Column(name = "password", nullable = false, length = 72)
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -32,16 +34,16 @@ public class User {
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "favorite_recipes",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "recipe_id"))
     private List<Recipe> favoriteRecipes;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     List<AvailableIngredient> availableIngredients;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     List<ShoppingList> shoppingList;
 }

@@ -1,25 +1,35 @@
 package com.example.SmartKitchen.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
     private final JwtCore jwtCore;
     private final UserDetailsService userDetailsService;
+    private final ObjectMapper mapper;
 
 
     @Override
@@ -28,6 +38,7 @@ public class TokenFilter extends OncePerRequestFilter {
         String username = null;
         UserDetails userDetails = null;
         UsernamePasswordAuthenticationToken auth = null;
+
         try {
             String headerAuth = request.getHeader("Authorization");
             if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
@@ -44,14 +55,19 @@ public class TokenFilter extends OncePerRequestFilter {
                         );
                         SecurityContextHolder.getContext().setAuthentication(auth);
                     }
-                    else {
-                        System.out.println("Пользователь в бане");
-                    }
                 }
             }
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
-            System.out.println("Токен не прошел проверку");
+//            Map<String, Object> errorDetails = new HashMap<>();
+//            errorDetails.put("message", "bad JWT");
+//            response.setStatus(HttpStatus.FORBIDDEN.value());
+//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            mapper.writeValue(response.getWriter(), errorDetails);
+
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().print("Bad JWT");
         }
-        filterChain.doFilter(request, response);
+
     }
 }

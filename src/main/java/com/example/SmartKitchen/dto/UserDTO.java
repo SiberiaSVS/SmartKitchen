@@ -3,20 +3,16 @@ package com.example.SmartKitchen.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-public class SignupRequest {
-    @NotNull
-    @NotBlank
+@Data
+public class UserDTO {
     private String username;
-    @NotNull
-    @NotBlank
-    @Email(message = "Неверный email")
+
+    @Email
     private String email;
-    @NotNull
-    @NotBlank
+
+    private String oldPassword;
+
     private String password;
 }
