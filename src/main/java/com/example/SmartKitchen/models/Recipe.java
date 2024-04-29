@@ -8,6 +8,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "recipes")
@@ -27,11 +28,11 @@ public class Recipe {
     @Column(name = "image_path", nullable = false, length = 50)
     private String imagePath;
 
-    @Lob
+    //@Lob
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Lob
+    //@Lob
     @Column(name = "cook_steps", nullable = false)
     private String cookSteps;
 
@@ -48,6 +49,6 @@ public class Recipe {
     @ManyToMany(mappedBy = "favoriteRecipes")
     private List<User> usersAddedToFavorite;
 
-    @OneToMany(mappedBy = "recipe")
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
     private List<RecipeIngredient> ingredients;
 }

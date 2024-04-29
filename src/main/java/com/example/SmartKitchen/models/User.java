@@ -39,11 +39,14 @@ public class User {
             name = "favorite_recipes",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "recipe_id"))
+    @JsonIgnore
     private List<Recipe> favoriteRecipes;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<AvailableIngredient> availableIngredients;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<ShoppingList> shoppingList;
 }

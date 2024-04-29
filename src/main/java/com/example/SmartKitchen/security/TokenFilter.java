@@ -39,7 +39,7 @@ public class TokenFilter extends OncePerRequestFilter {
         UserDetails userDetails = null;
         UsernamePasswordAuthenticationToken auth = null;
 
-        try {
+//        try {
             String headerAuth = request.getHeader("Authorization");
             if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
                 jwt = headerAuth.substring(7);
@@ -58,16 +58,16 @@ public class TokenFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
-//            Map<String, Object> errorDetails = new HashMap<>();
-//            errorDetails.put("message", "bad JWT");
+//        } catch (Exception e) {
+////            Map<String, Object> errorDetails = new HashMap<>();
+////            errorDetails.put("message", "bad JWT");
+////            response.setStatus(HttpStatus.FORBIDDEN.value());
+////            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+////            mapper.writeValue(response.getWriter(), errorDetails);
+//
 //            response.setStatus(HttpStatus.FORBIDDEN.value());
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            mapper.writeValue(response.getWriter(), errorDetails);
-
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.getWriter().print("Bad JWT");
-        }
+//            response.getWriter().print(e.getMessage());
+//        }
 
     }
 }

@@ -1,5 +1,6 @@
 package com.example.SmartKitchen.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ingredients")
@@ -20,7 +22,7 @@ public class Ingredient {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Lob
+    //@Lob
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -31,6 +33,7 @@ public class Ingredient {
     @JoinColumn(name = "measure_id", nullable = false)
     private Measure measure;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "ingredient")
     private List<RecipeIngredient> recipes;
 }
