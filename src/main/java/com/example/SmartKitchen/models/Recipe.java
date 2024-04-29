@@ -49,6 +49,6 @@ public class Recipe {
     @ManyToMany(mappedBy = "favoriteRecipes")
     private List<User> usersAddedToFavorite;
 
-    @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<RecipeIngredient> ingredients;
 }

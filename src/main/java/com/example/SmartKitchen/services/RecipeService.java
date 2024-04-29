@@ -49,7 +49,7 @@ public class RecipeService {
                 .tags(tagRepository.findByNames(dto.getTags()))
                 .build());
 
-        recipeIngredientService.updateIngredientsListInRecipe(dto.getIngredients(), recipe.getId());
+        recipe.setIngredients(recipeIngredientService.updateIngredientsListInRecipe(dto.getIngredients(), recipe.getId()));
 
         return recipeToResponseDTO(recipe);
     }
@@ -78,7 +78,7 @@ public class RecipeService {
             if (dto.getTags() != null)
                 recipe.setTags(tagRepository.findByNames(dto.getTags()));
 
-            recipeIngredientService.updateIngredientsListInRecipe(dto.getIngredients(), recipe.getId());
+            recipe.setIngredients(recipeIngredientService.updateIngredientsListInRecipe(dto.getIngredients(), recipe.getId()));
 
             return recipeToResponseDTO(recipeRepository.save(recipe));
         }

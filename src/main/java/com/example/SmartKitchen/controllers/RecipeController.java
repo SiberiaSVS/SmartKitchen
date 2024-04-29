@@ -19,9 +19,25 @@ public class RecipeController {
         return ResponseEntity.ok(recipeService.getAllRecipes(principal));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRecipeById(Principal principal, @PathVariable Long id) {
+        return ResponseEntity.ok(recipeService.getRecipeById(principal, id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRecipeById(Principal principal, @PathVariable Long id) {
+        recipeService.deleteById(principal, id);
+        return ResponseEntity.ok("Ok");
+    }
+
     @PostMapping
     public ResponseEntity<?> addRecipe(Principal principal, @RequestBody RecipeDTO dto) {
         return ResponseEntity.ok(recipeService.create(principal, dto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateRecipe(Principal principal, @PathVariable Long id, @RequestBody RecipeDTO dto) {
+        return ResponseEntity.ok(recipeService.updateRecipe(principal, id, dto));
     }
 
     @GetMapping("/add-to-favorites/{id}")
