@@ -30,4 +30,10 @@ public class ShoppingListController {
         shoppingListService.removeIngredientFromShoppingListForThisUserById(principal, id);
         return ResponseEntity.ok("Ok");
     }
+
+    @PatchMapping("/mark-as-bought/{id}")
+    public ResponseEntity<?> markAsBought(Principal principal, @PathVariable Long id) {
+        shoppingListService.markAsBought(principal, id);
+        return ResponseEntity.ok("Ok");
+    }
 }

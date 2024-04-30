@@ -11,4 +11,6 @@ import java.util.List;
 public interface AvailableIngredientRepository extends JpaRepository<AvailableIngredient, Long> {
     void deleteByUserIdAndIngredientId(@Param("userId") Long userId, @Param("ingredientId") Long ingredientId);
     List<AvailableIngredient> findByUserId(Long userId);
+    AvailableIngredient findByUserIdAndIngredientId(Long userId, Long ingredientId);
+    boolean existsByUserIdAndIngredientId(Long userId, Long ingredientId);
 }

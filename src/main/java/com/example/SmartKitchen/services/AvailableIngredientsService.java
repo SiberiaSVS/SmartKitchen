@@ -1,10 +1,8 @@
 package com.example.SmartKitchen.services;
 
 import com.example.SmartKitchen.dto.AvailableIngredientDTO;
-import com.example.SmartKitchen.models.AvailableIngredient;
-import com.example.SmartKitchen.models.Ingredient;
-import com.example.SmartKitchen.models.User;
-import com.example.SmartKitchen.models.UserIngredientId;
+import com.example.SmartKitchen.dto.IngredientAmountDTO;
+import com.example.SmartKitchen.models.*;
 import com.example.SmartKitchen.repositories.AvailableIngredientRepository;
 import com.example.SmartKitchen.repositories.IngredientRepository;
 import com.example.SmartKitchen.repositories.UserRepository;
@@ -28,6 +26,29 @@ public class AvailableIngredientsService {
         Ingredient ingredient = ingredientRepository.findById(ingredientId).orElseThrow();
 
         AvailableIngredient availableIngredient = new AvailableIngredient(new UserIngredientId(), user, ingredient, amount);
+
+        availableIngredient = availableIngredientRepository.save(availableIngredient);
+
+        return AvailableIngredientDTO.builder()
+                .ingredient(availableIngredient.getIngredient())
+                .amount(availableIngredient.getAmount())
+                .build();
+    }
+
+    public AvailableIngredientDTO addIngredientToAvailableFromShoppingList(ShoppingList ingredientFromShoppingList) {
+        User user = ingredientFromShoppingList.getUser();
+        Ingredient ingredient = ingredientFromShoppingList.getIngredient();
+        float amount = ingredientFromShoppingList.getAmount();
+
+        AvailableIngredient availableIngredient;
+
+        if (availableIngredientRepository.existsByUserIdAndIngredientId(user.getId(), ingredient.getId())) {
+            availableIngredient = availableIngredientRepository.findByUserIdAndIngredientId(user.getId(), ingredient.getId());
+
+            availableIngredient.setAmount(availableIngredient.getAmount() + amount);
+        } else {
+            availableIngredient = new AvailableIngredient(new UserIngredientId(), user, ingredient, amount);
+        }
 
         availableIngredient = availableIngredientRepository.save(availableIngredient);
 

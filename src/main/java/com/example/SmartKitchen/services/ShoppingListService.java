@@ -1,5 +1,6 @@
 package com.example.SmartKitchen.services;
 
+import com.example.SmartKitchen.dto.IngredientAmountDTO;
 import com.example.SmartKitchen.dto.ShoppingListDTO;
 import com.example.SmartKitchen.models.Ingredient;
 import com.example.SmartKitchen.models.ShoppingList;
@@ -22,6 +23,7 @@ public class ShoppingListService {
     private final UserRepository userRepository;
     private final IngredientRepository ingredientRepository;
     private final ShoppingListRepository shoppingListRepository;
+    private final AvailableIngredientsService availableIngredientsService;
 
     public ShoppingListDTO addIngredientToShoppingListForThisUser(Principal principal, Long ingredientId, float amount) {
         User user = userRepository.findByUsername(principal.getName()).orElseThrow();
@@ -51,5 +53,15 @@ public class ShoppingListService {
     public void removeIngredientFromShoppingListForThisUserById(Principal principal, Long ingredientId) {
         User user = userRepository.findByUsername(principal.getName()).orElseThrow();
         shoppingListRepository.deleteByUserIdAndIngredientId(user.getId(), ingredientId);
+    }
+
+    @Transactional
+    public void markAsBought(Principal principal, Long ingredientId) {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+
+        ShoppingList ingredientFromShoppingList = shoppingListRepository.findByUserIdAndIngredientId(user.getId(), ingredientId);
+
+        shoppingListRepository.deleteByUserIdAndIngredientId(user.getId(), ingredientId);
+        availableIngredientsService.addIngredientToAvailableFromShoppingList(ingredientFromShoppingList);
     }
 }

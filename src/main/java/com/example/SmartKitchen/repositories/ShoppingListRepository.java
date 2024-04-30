@@ -13,6 +13,8 @@ public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long
     //@Query(value = "DELETE FROM shopping_list sl WHERE sl.user_id = :userId AND sl.ingredient_id = :ingredientId", nativeQuery = true)
     void deleteByUserIdAndIngredientId(@Param("userId") Long userId, @Param("ingredientId") Long ingredientId);
 
+    ShoppingList findByUserIdAndIngredientId(@Param("userId") Long userId, @Param("ingredientId") Long ingredientId);
+
     //@Query(value = "SELECT * FROM shopping_list sl WHERE sl.user_id = :userId", nativeQuery = true)
     List<ShoppingList> findByUserId(Long userId);
 }
