@@ -25,6 +25,11 @@ public class AvailableIngredientsController {
         return ResponseEntity.ok(availableIngredientsService.getAvailableIngredientsForThisUser(principal));
     }
 
+    @PatchMapping
+    public ResponseEntity<?> update(Principal principal, @RequestBody IngredientAmountDTO dto) {
+        return ResponseEntity.ok(availableIngredientsService.updateAvailableIngredient(principal, dto.getIngredientId(), dto.getAmount()));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteIngredientFromAvailableIngredients(Principal principal, @PathVariable Long id) {
         availableIngredientsService.removeIngredientFromAvailableIngredientsForThisUser(principal, id);

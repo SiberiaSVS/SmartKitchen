@@ -1,7 +1,6 @@
 package com.example.SmartKitchen.services;
 
 import com.example.SmartKitchen.dto.AvailableIngredientDTO;
-import com.example.SmartKitchen.dto.IngredientAmountDTO;
 import com.example.SmartKitchen.models.*;
 import com.example.SmartKitchen.repositories.AvailableIngredientRepository;
 import com.example.SmartKitchen.repositories.IngredientRepository;
@@ -29,6 +28,18 @@ public class AvailableIngredientsService {
 
         availableIngredient = availableIngredientRepository.save(availableIngredient);
 
+        return AvailableIngredientDTO.builder()
+                .ingredient(availableIngredient.getIngredient())
+                .amount(availableIngredient.getAmount())
+                .build();
+    }
+
+    public AvailableIngredientDTO updateAvailableIngredient(Principal principal, Long ingredientId, float amount) {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+        AvailableIngredient availableIngredient = availableIngredientRepository.findByUserIdAndIngredientId(user.getId(), ingredientId);
+
+        availableIngredient.setAmount(amount);
+        availableIngredient = availableIngredientRepository.save(availableIngredient);
         return AvailableIngredientDTO.builder()
                 .ingredient(availableIngredient.getIngredient())
                 .amount(availableIngredient.getAmount())

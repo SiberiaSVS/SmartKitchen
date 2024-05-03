@@ -3,15 +3,16 @@ package com.example.SmartKitchen.services;
 import com.example.SmartKitchen.dto.IngredientAmountResponseDTO;
 import com.example.SmartKitchen.dto.RecipeDTO;
 import com.example.SmartKitchen.dto.RecipeResponseDTO;
-import com.example.SmartKitchen.models.Recipe;
-import com.example.SmartKitchen.models.User;
+import com.example.SmartKitchen.models.*;
 import com.example.SmartKitchen.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +23,7 @@ public class RecipeService {
     private final TagRepository tagRepository;
     private final RecipeIngredientService recipeIngredientService;
     private final TagService tagService;
+    private final AvailableIngredientRepository availableIngredientRepository;
 
     public RecipeResponseDTO getRecipeById(Principal principal, Long id) {
         Recipe recipe = recipeRepository.findById(id).orElseThrow();
@@ -32,6 +34,39 @@ public class RecipeService {
 
     public List<RecipeResponseDTO> getAllRecipes(Principal principal) {
         List<Recipe> recipes = recipeRepository.findByUserIdOrHiddenForOthersFalse(userRepository.findByUsername(principal.getName()).orElseThrow().getId());
+        return recipes.stream().map(this::recipeToResponseDTO).collect(Collectors.toList());
+    }
+
+    public List<RecipeResponseDTO> getRecipesByTags(Principal principal, List<String> tags) {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+        List<Recipe> recipes = recipeRepository.findByTags(tags, user.getId());
+
+        return recipes.stream().map(this::recipeToResponseDTO).collect(Collectors.toList());
+    }
+
+    public List<RecipeResponseDTO> getRecipesByTagsAndAvailableProducts(Principal principal, List<String> tags) {
+        List<Recipe> recipes;
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+
+        if (tags.isEmpty()) {
+            recipes = recipeRepository.findByUserIdOrHiddenForOthersFalse(userRepository.findByUsername(principal.getName()).orElseThrow().getId());
+        } else {
+            recipes = recipeRepository.findByTags(tags, user.getId());
+        }
+
+        List<AvailableIngredient> ingredients = availableIngredientRepository.findByUserId(user.getId());
+
+        Map<Long, Float> ingredientsMap = new HashMap<>(ingredients.size());
+        ingredients.forEach(element -> ingredientsMap.put(element.getIngredient().getId(), element.getAmount()));
+
+        recipes = recipes.stream().filter(recipe -> {
+            for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+                if (recipeIngredient.getAmount() > ingredientsMap.get(recipeIngredient.getIngredient().getId()))
+                    return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
+
         return recipes.stream().map(this::recipeToResponseDTO).collect(Collectors.toList());
     }
 
@@ -101,6 +136,33 @@ public class RecipeService {
         user.setFavoriteRecipes(favoriteRecipes);
         userRepository.save(user);
         return favoriteRecipes.stream().map(this::recipeToResponseDTO).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void markCooked(Principal principal, Long recipeId) {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+        //1) Собрать список ингредиентов по рецепту
+        List<RecipeIngredient> recipeIngredients = recipeRepository.findById(recipeId).orElseThrow().getIngredients();
+        List<Long> ids = recipeIngredients.stream().map(recipeIngredient -> recipeIngredient.getIngredient().getId()).toList();
+
+        //2) Собрать ЭТИ ингредиенты рецепты по юзеру
+        List <AvailableIngredient> userIngredients = availableIngredientRepository.findByIngredientIds(ids, user.getId());
+
+        if (recipeIngredients.size() != userIngredients.size()) {
+            throw new RuntimeException("У пользователя недостаточно продуктов");
+        }
+
+        //3) Вычесть
+        Map<Long, Float> ingMap = new HashMap<>(recipeIngredients.size());
+        recipeIngredients.forEach(element -> ingMap.put(element.getIngredient().getId(), element.getAmount()));
+
+        userIngredients.forEach(ingr -> {
+            ingr.setAmount(ingr.getAmount() - ingMap.get(ingr.getIngredient().getId()));
+            if (ingr.getAmount() < 0 ) throw new RuntimeException("У пользователя недостаточное количество одного из ингредиентов");
+        });
+
+        //4) Записать новые значения
+        availableIngredientRepository.saveAll(userIngredients);
     }
 
     private RecipeResponseDTO recipeToResponseDTO(Recipe recipe) {

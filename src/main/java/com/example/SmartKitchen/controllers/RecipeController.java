@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,5 +49,21 @@ public class RecipeController {
     @GetMapping("/remove-from-favorites/{id}")
     public ResponseEntity<?> removeRecipeFromFavorites(Principal principal, @PathVariable Long id) {
         return ResponseEntity.ok(recipeService.removeRecipeFromFavorite(principal, id));
+    }
+
+    @PatchMapping("/mark-cooked/{id}")
+    public ResponseEntity<?> markCooked(Principal principal, @PathVariable Long id) {
+        recipeService.markCooked(principal, id);
+        return ResponseEntity.ok("Ok");
+    }
+
+    @GetMapping("/find-with-tags")
+    public ResponseEntity<?> findWithTags(Principal principal, @RequestBody List<String> tags) {
+        return ResponseEntity.ok(recipeService.getRecipesByTags(principal, tags));
+    }
+
+    @GetMapping("/find-by-available-and-tags")
+    public ResponseEntity<?> findByAvailableAndTags(Principal principal, @RequestBody List<String> tags) {
+        return ResponseEntity.ok(recipeService.getRecipesByTagsAndAvailableProducts(principal, tags));
     }
 }
