@@ -38,12 +38,12 @@ public class SecurityConfig {
                 .userDetailsService(userService)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/user/admin", "/user/set-role/**", "/user/ban/**", "/user/unban/**",
-                                "/measure", "/measure/**"
+                                "/user/admin", "/user/set-role/**", "/user/ban/**", "/user/unban/**"
                         ).hasRole("ADMIN")
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/user/any").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/image/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);

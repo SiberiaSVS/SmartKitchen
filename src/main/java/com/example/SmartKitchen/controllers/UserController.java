@@ -28,23 +28,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/authorized")
-    public String userAccess(Principal principal) {
-        if (principal == null) return null;
-        return "Привет, пользователь";
-    }
-
-    @GetMapping("/any")
-    public String any() {
-        return "Hello :3";
-    }
-
-    @GetMapping("/admin")
-    public String adminAccess(Principal principal) {
-        if (principal == null) return null;
-        return "Привет, админ";
-    }
-
     @GetMapping("/list")
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());

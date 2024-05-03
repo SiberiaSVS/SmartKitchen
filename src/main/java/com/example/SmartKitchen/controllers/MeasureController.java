@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,17 +21,20 @@ public class MeasureController {
         return ResponseEntity.ok(measureService.getAll());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createMeasure(@Valid @RequestBody MeasureDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(measureService.create(dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateMeasure(@PathVariable Long id, @Valid @RequestBody MeasureDTO dto) {
         Measure measure = measureService.updateById(id, dto);
         return measure == null ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found") : ResponseEntity.ok(measure);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMeasure(@PathVariable Long id) {
         if (measureService.deleteById(id))
