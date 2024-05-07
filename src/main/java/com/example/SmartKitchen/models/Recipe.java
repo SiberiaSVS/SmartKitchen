@@ -25,7 +25,7 @@ public class Recipe {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "image_path", nullable = false, length = 50)
+    @Column(name = "image_path", nullable = false)
     private String imagePath;
 
     //@Lob

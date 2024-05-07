@@ -26,20 +26,40 @@ public class RecipeService {
     private final AvailableIngredientRepository availableIngredientRepository;
 
     public RecipeResponseDTO getRecipeById(Principal principal, Long id) {
+        long userId;
+        if(principal == null) {
+            userId = 0L;
+        } else {
+            User user = userRepository.findByUsername(principal.getName()).orElse(null);
+            userId = user != null ? user.getId() : 0L;
+        }
         Recipe recipe = recipeRepository.findById(id).orElseThrow();
-        if (recipe.isHiddenForOthers() && !recipe.getUser().getId().equals(userRepository.findByUsername(principal.getName()).orElseThrow().getId()))
+        if (recipe.isHiddenForOthers() && !recipe.getUser().getId().equals(userId))
             return null;
         return recipeToResponseDTO(recipe);
     }
 
     public List<RecipeResponseDTO> getAllRecipes(Principal principal) {
-        List<Recipe> recipes = recipeRepository.findByUserIdOrHiddenForOthersFalse(userRepository.findByUsername(principal.getName()).orElseThrow().getId());
+        long userId;
+        if(principal == null) {
+            userId = 0L;
+        } else {
+            User user = userRepository.findByUsername(principal.getName()).orElse(null);
+            userId = user != null ? user.getId() : 0L;
+        }
+        List<Recipe> recipes = recipeRepository.findByUserIdOrHiddenForOthersFalse(userId);
         return recipes.stream().map(this::recipeToResponseDTO).collect(Collectors.toList());
     }
 
     public List<RecipeResponseDTO> getRecipesByTags(Principal principal, List<String> tags) {
-        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
-        List<Recipe> recipes = recipeRepository.findByTags(tags, user.getId());
+        long userId;
+        if(principal == null) {
+            userId = 0L;
+        } else {
+            User user = userRepository.findByUsername(principal.getName()).orElse(null);
+             userId = user != null ? user.getId() : 0L;
+        }
+        List<Recipe> recipes = recipeRepository.findByTags(tags, userId);
 
         return recipes.stream().map(this::recipeToResponseDTO).collect(Collectors.toList());
     }

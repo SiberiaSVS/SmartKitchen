@@ -26,7 +26,7 @@ public class Ingredient {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "image_path", nullable = false, length = 50)
+    @Column(name = "image_path", nullable = false)
     private String imagePath;
 
     @ManyToOne

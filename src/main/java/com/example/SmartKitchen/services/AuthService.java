@@ -2,6 +2,7 @@ package com.example.SmartKitchen.services;
 
 import com.example.SmartKitchen.dto.SigninRequest;
 import com.example.SmartKitchen.dto.SignupRequest;
+import com.example.SmartKitchen.dto.TokenDTO;
 import com.example.SmartKitchen.models.Role;
 import com.example.SmartKitchen.models.User;
 import com.example.SmartKitchen.repositories.UserRepository;
@@ -42,7 +43,7 @@ public class AuthService {
         return ResponseEntity.ok("Успех");
     }
 
-    public ResponseEntity<String> signin(SigninRequest signinRequest) {
+    public ResponseEntity<?> signin(SigninRequest signinRequest) {
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getUsername(), signinRequest.getPassword()));
@@ -51,6 +52,8 @@ public class AuthService {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtCore.generateToken(authentication);
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(TokenDTO.builder()
+                .token(jwt)
+                .build());
     }
 }

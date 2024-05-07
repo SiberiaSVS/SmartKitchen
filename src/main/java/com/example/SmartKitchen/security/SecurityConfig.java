@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -27,9 +29,21 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebMvcConfigurer corsConfig() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedMethods("*");;
+            }
+        };
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+//                .cors(AbstractHttpConfigurer::disable)
+
 //                .cors(httpSecurityCorsConfigurer ->
 //                        httpSecurityCorsConfigurer.configurationSource(request ->
 //                        new CorsConfiguration().applyPermitDefaultValues()))
@@ -44,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/any").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/image/**").permitAll()
+                        .requestMatchers("/ingredient", "/ingredient/**").permitAll()
+                        .requestMatchers("/recipe", "/recipe/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
