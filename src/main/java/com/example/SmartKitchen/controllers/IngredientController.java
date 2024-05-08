@@ -16,8 +16,11 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
     @GetMapping
-    public ResponseEntity<?> getAllIngredients() {
-        return ResponseEntity.ok(ingredientService.getAll());
+    public ResponseEntity<?> getAllIngredients(@RequestParam(name = "name", required = false) String name) {
+        if (name == null)
+            return ResponseEntity.ok(ingredientService.getAll());
+        else
+            return ResponseEntity.ok(ingredientService.getBySearch(name));
     }
 
     @GetMapping("/{id}")

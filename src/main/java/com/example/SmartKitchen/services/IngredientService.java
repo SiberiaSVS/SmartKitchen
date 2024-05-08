@@ -14,6 +14,7 @@ import java.util.List;
 public class IngredientService {
     private final IngredientRepository ingredientRepository;
     private final MeasureRepository measureRepository;
+    private final ImageService imageService;
 
     public Ingredient create(IngredientDTO dto) {
         return ingredientRepository.save(Ingredient.builder()
@@ -28,13 +29,19 @@ public class IngredientService {
         return ingredientRepository.findById(id).orElseThrow();
     }
 
+    public List<Ingredient> getBySearch(String name) {
+        return ingredientRepository.findByName(name);
+    }
+
     public List<Ingredient> getAll() {
         return ingredientRepository.findAll();
     }
 
     public boolean deleteById(Long id) {
         if (ingredientRepository.existsById(id)) {
+            Ingredient ingredient = getById(id);
             ingredientRepository.deleteById(id);
+            imageService.deleteImage(ingredient.getImagePath());
             return true;
         } else {
             return false;

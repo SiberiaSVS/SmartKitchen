@@ -24,6 +24,7 @@ public class RecipeService {
     private final RecipeIngredientService recipeIngredientService;
     private final TagService tagService;
     private final AvailableIngredientRepository availableIngredientRepository;
+    private final ImageService imageService;
 
     public RecipeResponseDTO getRecipeById(Principal principal, Long id) {
         long userId;
@@ -112,7 +113,9 @@ public class RecipeService {
     @Transactional
     public void deleteById(Principal principal, Long id) {
         Recipe recipe = recipeRepository.findById(id).orElseThrow();
-        if (recipe.getUser().getId().equals(userRepository.findByUsername(principal.getName()).orElseThrow().getId())) {
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+        if (user.getRole() == Role.ROLE_ADMIN || recipe.getUser().getId().equals(user.getId())) {
+            imageService.deleteImage(recipe.getImagePath());
             recipeRepository.deleteById(id);
         }
     }

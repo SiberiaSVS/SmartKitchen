@@ -34,6 +34,14 @@ public class Ingredient {
     private Measure measure;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "ingredient")
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.REMOVE)
     private List<RecipeIngredient> recipes;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.REMOVE)
+    private List<AvailableIngredient> availableIngredients;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.REMOVE)
+    private List<ShoppingList> shoppingLists;
 }

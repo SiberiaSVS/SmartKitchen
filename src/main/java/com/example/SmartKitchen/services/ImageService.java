@@ -1,5 +1,6 @@
 package com.example.SmartKitchen.services;
 
+import com.example.SmartKitchen.dto.ImageDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,14 +16,18 @@ public class ImageService {
     @Value("${image-path}")
     private String imageFolder;
 
-    public String uploadImage(MultipartFile file) throws IOException {
+    public ImageDTO uploadImage(MultipartFile file) throws IOException {
         String filename = UUID.randomUUID() + file.getOriginalFilename();
         file.transferTo(new File(imageFolder + filename));
 
-        return filename;
+        return ImageDTO.builder().imageName(filename).build();
     }
 
     public byte[] downloadImage(String fileName) throws IOException {
         return Files.readAllBytes(new File(imageFolder + fileName).toPath());
+    }
+
+    public boolean deleteImage(String fileName) {
+        return new File(imageFolder + fileName).delete();
     }
 }
