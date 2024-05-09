@@ -16,14 +16,25 @@ import java.util.List;
 public class RecipeController {
     private final RecipeService recipeService;
 
-    @GetMapping
-    public ResponseEntity<?> getAll(Principal principal) {
-        return ResponseEntity.ok(recipeService.getAllRecipes(principal));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getRecipeById(Principal principal, @PathVariable Long id) {
         return ResponseEntity.ok(recipeService.getRecipeById(principal, id));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAll(Principal principal, @RequestParam(name = "search", required = false) String search) {
+        return ResponseEntity.ok(recipeService.getAllRecipes(principal, search));
+    }
+
+    @GetMapping("/find-with-tags")
+    public ResponseEntity<?> findWithTags(Principal principal, @RequestParam(name = "tags", required = false) List<String> tags, @RequestParam(name = "search", required = false) String search) {
+        return ResponseEntity.ok(recipeService.getRecipesByTags(principal, tags, search));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @GetMapping("/find-by-available-and-tags")
+    public ResponseEntity<?> findByAvailableAndTags(Principal principal, @RequestParam(name = "tags", required = false) List<String> tags, @RequestParam(name = "search", required = false) String search) {
+        return ResponseEntity.ok(recipeService.getRecipesByTagsAndAvailableProducts(principal, tags, search));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -62,16 +73,5 @@ public class RecipeController {
     public ResponseEntity<?> markCooked(Principal principal, @PathVariable Long id) {
         recipeService.markCooked(principal, id);
         return ResponseEntity.ok("Ok");
-    }
-
-    @GetMapping("/find-with-tags")
-    public ResponseEntity<?> findWithTags(Principal principal, @RequestBody List<String> tags) {
-        return ResponseEntity.ok(recipeService.getRecipesByTags(principal, tags));
-    }
-
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    @GetMapping("/find-by-available-and-tags")
-    public ResponseEntity<?> findByAvailableAndTags(Principal principal, @RequestBody List<String> tags) {
-        return ResponseEntity.ok(recipeService.getRecipesByTagsAndAvailableProducts(principal, tags));
     }
 }
