@@ -112,10 +112,14 @@ public class RecipeService {
 
     @Transactional
     public void deleteById(Principal principal, Long id) {
+
         Recipe recipe = recipeRepository.findById(id).orElseThrow();
         User user = userRepository.findByUsername(principal.getName()).orElseThrow();
         if (user.getRole() == Role.ROLE_ADMIN || recipe.getUser().getId().equals(user.getId())) {
             imageService.deleteImage(recipe.getImagePath());
+            recipeRepository.deleteRecipeFromFavorite(id);
+            recipeRepository.deleteRecipeFromRecipeIngredients(id);
+            recipeRepository.deleteRecipeFromRecipeTags(id);
             recipeRepository.deleteById(id);
         }
     }
