@@ -23,7 +23,7 @@ public class Ingredient {
     private String name;
 
     //@Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "image_path", nullable = false)

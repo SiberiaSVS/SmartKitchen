@@ -29,11 +29,11 @@ public class Recipe {
     private String imagePath;
 
     //@Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     //@Lob
-    @Column(name = "cook_steps", nullable = false)
+    @Column(name = "cook_steps", nullable = false, columnDefinition = "TEXT")
     private String cookSteps;
 
     @Column(name = "hidden_for_others", nullable = false)
