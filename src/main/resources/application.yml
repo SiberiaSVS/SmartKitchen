@@ -3,9 +3,9 @@ spring:
         name: SmartKitchen
     datasource:
         driverClassName: org.postgresql.Driver
-        url: jdbc:postgresql://ep-aged-resonance-a2a0q6ds.eu-central-1.aws.neon.tech/SmartKitchen
-        username: Semenov
-        password: 1mzn8wpBZHbA
+        url: 
+        username: 
+        password: 
     jpa:
         properties:
             hibernate:
@@ -17,6 +17,14 @@ spring:
             max-file-size: 50MB
             max-request-size: 50MB
 token:
-    secret: zazhgitushinasriismoyivetomvsyanaukachrobvidetbukvimiliymoysumeygovnosmeniitmochoiidirabotaisuka
-    lifetime: 864000000
-image-path: \src\main\resources\images\
+    secret: 
+    lifetime: 
+cloud:
+    aws:
+        credentials:
+            access-key: 
+            secret-key: 
+        bucket:
+            name: 
+        endpoint: 
+        region: 
